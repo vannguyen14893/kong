@@ -1,0 +1,5 @@
+  - username: end-user-consumer
+    jwt_secrets:
+      - key: "end-user-issuer"
+        algorithm: HS256
+        secret: "mobile-secret-key-123"

@@ -1,0 +1,13 @@
+  - name: cors
+    config:
+      origins: ["http://localhost:3000", "https://example.com"]
+      methods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
+      headers:
+        - Accept
+        - Authorization
+        - Content-Type

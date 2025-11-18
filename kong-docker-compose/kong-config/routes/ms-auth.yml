@@ -1,0 +1,11 @@
+  - name: ms-auth-route
+    service: ms-auth-service
+    paths:
+      - /ms-auth-service
+    methods:
+      - POST
+      - GET
+      - PUT
+      - DELETE
+      - UPDATE
+    strip_path: true

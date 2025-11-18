@@ -1,0 +1,11 @@
+  - name: ms-baccarat-route
+    service: ms-baccarat-service
+    paths:
+      - /ms-baccarat-service
+    methods:
+      - POST
+      - GET
+      - PUT
+      - DELETE
+      - UPDATE
+    strip_path: true

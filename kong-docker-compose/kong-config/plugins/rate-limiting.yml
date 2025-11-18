@@ -1,0 +1,10 @@
+  - name: rate-limiting
+    service: ms-user-service
+    config:
+      minute: 10
+      policy: local
+  - name: rate-limiting
+    service: ms-shop-service
+    config:
+      minute: 30
+      policy: local

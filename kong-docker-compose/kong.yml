@@ -1,0 +1,163 @@
+_format_version: "3.0"
+_transform: true
+services:
+      - name: ms-auth-service
+        url: https://petstore.swagger.io/v2/store/inventory
+        tags:
+          - auth
+      - name: ms-baccarat-service
+        url: https://petstore.swagger.io/v2/store/inventory
+        tags:
+          - baccarat
+      - name: ms-game-service
+        url: https://petstore.swagger.io/v2/store/inventory
+        tags:
+          - game
+      - name: ms-hilo-service
+        url: https://petstore.swagger.io/v2/store/inventory
+        tags:
+          - hilo
+      - name: ms-inventory-service
+        url: https://petstore.swagger.io/v2/store/inventory
+        tags:
+          - inventory
+      - name: ms-leaderboard-service
+        url: https://petstore.swagger.io/v2/store/inventory
+        tags:
+          - leaderboard
+      - name: ms-shop-service
+        url: https://petstore.swagger.io/v2/store/inventory
+        tags:
+          - shop
+      - name: ms-user-service
+        url: https://petstore.swagger.io/v2/store/inventory
+        tags:
+          - user
+consumers:
+      - username: end-user-consumer
+        jwt_secrets:
+          - key: "end-user-issuer"
+            algorithm: HS256
+            secret: "mobile-secret-key-123"
+
+routes:
+      - name: ms-auth-route
+        service: ms-auth-service
+        paths:
+          - /ms-auth-service
+        methods:
+          - POST
+          - GET
+          - PUT
+          - DELETE
+          - UPDATE
+        strip_path: true
+      - name: ms-baccarat-route
+        service: ms-baccarat-service
+        paths:
+          - /ms-baccarat-service
+        methods:
+          - POST
+          - GET
+          - PUT
+          - DELETE
+          - UPDATE
+        strip_path: true
+      - name: ms-game-route
+        service: ms-game-service
+        paths:
+          - /ms-game-service
+        methods:
+          - POST
+          - GET
+          - PUT
+          - DELETE
+          - UPDATE
+        strip_path: true
+      - name: ms-hilo-route
+        service: ms-hilo-service
+        paths:
+          - /ms-hilo-service
+        methods:
+          - POST
+          - GET
+          - PUT
+          - DELETE
+          - UPDATE
+        strip_path: true
+      - name: ms-inventory-route
+        service: ms-inventory-service
+        paths:
+          - /ms-inventory-service
+        methods:
+          - POST
+          - GET
+          - PUT
+          - DELETE
+          - UPDATE
+        strip_path: true
+      - name: ms-leaderboard-route
+        service: ms-leaderboard-service
+        paths:
+          - /ms-leaderboard-service
+        methods:
+          - POST
+          - GET
+          - PUT
+          - DELETE
+          - UPDATE
+        strip_path: true
+      - name: ms-shop-route
+        service: ms-shop-service
+        paths:
+          - /ms-shop-service
+        methods:
+          - POST
+          - GET
+          - PUT
+          - DELETE
+          - UPDATE
+        strip_path: true
+      - name: ms-get-user-route
+        service: ms-user-service
+        paths:
+          - /ms-user-service
+        methods:
+          - POST
+          - GET
+          - PUT
+          - DELETE
+          - UPDATE
+        strip_path: true
+plugins:
+      - name: cors
+        config:
+          origins: ["http://localhost:3000", "https://example.com"]
+          methods:
+            - GET
+            - POST
+            - PUT
+            - DELETE
+            - OPTIONS
+          headers:
+            - Accept
+            - Authorization
+            - Content-Type
+      - name: jwt
+        config:
+          claims_to_verify:
+            - "exp"
+          key_claim_name: "iss"
+          secret_is_base64: false
+          run_on_preflight: true
+
+      - name: rate-limiting
+        service: ms-user-service
+        config:
+          minute: 10
+          policy: local
+      - name: rate-limiting
+        service: ms-shop-service
+        config:
+          minute: 30
+          policy: local

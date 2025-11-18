@@ -1,0 +1,4 @@
+  - name: ms-hilo-service
+    url: https://petstore.swagger.io/v2/store/inventory
+    tags:
+      - hilo

@@ -1,0 +1,11 @@
+  - name: ms-shop-route
+    service: ms-shop-service
+    paths:
+      - /ms-shop-service
+    methods:
+      - POST
+      - GET
+      - PUT
+      - DELETE
+      - UPDATE
+    strip_path: true

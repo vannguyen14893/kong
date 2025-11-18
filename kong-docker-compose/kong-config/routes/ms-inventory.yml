@@ -1,0 +1,11 @@
+  - name: ms-inventory-route
+    service: ms-inventory-service
+    paths:
+      - /ms-inventory-service
+    methods:
+      - POST
+      - GET
+      - PUT
+      - DELETE
+      - UPDATE
+    strip_path: true

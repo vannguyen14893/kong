@@ -1,0 +1,11 @@
+  - name: ms-game-route
+    service: ms-game-service
+    paths:
+      - /ms-game-service
+    methods:
+      - POST
+      - GET
+      - PUT
+      - DELETE
+      - UPDATE
+    strip_path: true
