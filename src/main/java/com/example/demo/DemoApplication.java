@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.auth0.jwt.algorithms.Algorithm;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.annotation.PostConstruct;
@@ -61,15 +62,13 @@ public class DemoApplication {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", "user");
         claims.put("userId", 12345);
-
         String token = createToken(claims, "ndvan");
         System.out.println("=== GENERATED TOKEN ===");
         System.out.println("Token: " + token);
 
         // Verify token locally
-        verifyToken(token);
+        //verifyToken(token);
     }
-
     private String createToken(Map<String, Object> claims, String subject) throws Exception {
         return Jwts.builder()
                 .setClaims(claims)
@@ -77,7 +76,7 @@ public class DemoApplication {
                 .setIssuer("mobile-app-issuer") // Must match Kong consumer key
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY.getBytes("UTF-8"))
+                .signWith(SignatureAlgorithm.RS256, loadPrivateKey())
                 .compact();
     }
 

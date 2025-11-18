@@ -1,5 +1,18 @@
-  - username: end-user-consumer
+  - username: jwt-mobile
+    custom_id: jwt-mobile-001
+    tags:
+      - jwt
+      - mobile
     jwt_secrets:
-      - key: "end-user-issuer"
-        algorithm: HS256
-        secret: "mobile-secret-key-123"
+      - key: "mobile-app-issuer"
+        algorithm: RS256
+        rsa_public_key: |
+          -----BEGIN PUBLIC KEY-----
+          MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAy1bHc/i3wLyq5sTKyN7g
+          aoCe78bWFD1dFaVdSFzvOlRvrc/VAaX3HQKtBhC09EPiDQU39KTvcAGuM1grRjSB
+          fnWRXOWCR+vsOa8v6MlpJqZPxu18fg+NLZKCXw0nhBt3H3WeSbCtVIYByEQ3hHYE
+          DRFNN/5wb2mQ+l5J4nNxrWoxYf5Y4ooGyoAltlEcj5XqVXN8cmz1t8anCQqZDXTW
+          cZ02bimwoqmk9RUoAH0fOa7NZMA6X7xE1aqgPWD9n/6Gu6Ny5aldlqfSLF8H2Fa2
+          II80VWXf5yAP9KshTwtZto70NhJFqyDsaia8vd0nldP0ovNyS2YYx9Nt7VVyGcbn
+          5wIDAQAB
+          -----END PUBLIC KEY-----

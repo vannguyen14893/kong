@@ -6,6 +6,7 @@ services:
     container_name: kong
     command: [ "/bin/sh" , "-c","/kong/declarative/merge.sh && kong start" ]
     environment:
+      user: root
       KONG_DATABASE: "off"
       KONG_DECLARATIVE_CONFIG: /kong/declarative/kong.yml
       KONG_PROXY_ACCESS_LOG: /dev/stdout
