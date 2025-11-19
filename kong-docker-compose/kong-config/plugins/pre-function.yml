@@ -3,49 +3,33 @@
 #    config:
 #      access:
 #        - |
-#          -- Extract JWT token từ header
-#          local token = kong.request.get_header("authorization")
-#          if token then
-#            token = token:match("Bearer%s+(.+)")
-#          end
+#          local auth_header = kong.request.get_header("authorization")
+#               local token = auth_header and auth_header:match("Bearer%s+(.+)")
 #
-#          if token then
-#            -- Forward token đến upstream service
-#            kong.service.request.set_header("X-JWT-Token", token)
+#               if not token then
+#                 return
+#               end
 #
-#            -- Basic claim extraction without external libraries
-#            -- Chỉ extract các claims đơn giản từ payload
-#            local parts = {}
-#            for part in token:gmatch("[^%.]+") do
-#              table.insert(parts, part)
-#            end
+#               -- Extract JWT payload
+#               local first_dot = token:find("%.")
+#               local last_dot = token:find("%.", first_dot + 1)
+#               if not first_dot or not last_dot then
+#                 return
+#               end
 #
-#            if #parts >= 2 then
-#              local payload = parts[2]
-#              -- Base64 decode
-#              local missing_padding = #payload % 4
-#              if missing_padding > 0 then
-#                payload = payload .. string.rep("=", 4 - missing_padding)
-#              end
+#               local payload_b64 = token:sub(first_dot + 1, last_dot - 1)
+#               local remainder = #payload_b64 % 4
+#               if remainder > 0 then
+#                 payload_b64 = payload_b64 .. string.rep("=", 4 - remainder)
+#               end
+#               payload_b64 = payload_b64:gsub("-", "+"):gsub("_", "/")
 #
-#              local ok, decoded = pcall(function()
-#                return require("ngx.base64").decode_base64url(payload)
-#              end)
+#               local claims_json = ngx.decode_base64(payload_b64)
+#               if not claims_json then
+#                 kong.log.err("JWT claims decode failed")
+#                 return
+#               end
 #
-#              if ok and decoded then
-#                -- Parse JSON claims
-#                local claims, err = kong.json.decode(decoded)
-#                if claims then
-#                  if claims.sub then
-#                    kong.service.request.set_header("X-User-ID", claims.sub)
-#                  end
-#                  if claims.roles then
-#                    kong.service.request.set_header("X-User-Roles", type(claims.roles) == "table" and table.concat(claims.roles, ",") or tostring(claims.roles))
-#                  end
-#                  if claims.email then
-#                    kong.service.request.set_header("X-User-Email", claims.email)
-#                  end
-#                end
-#              end
-#            end
-#          end
+#               -- Extract ISS
+#               local iss = claims_json:match('"iss"%s*:%s*"([^"]+)"')
+#               kong.log.info("ISS: ", iss or "nil")

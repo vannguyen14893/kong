@@ -4,7 +4,7 @@ services:
   kong:
     image: kong:3.8
     container_name: kong
-    command: [ "/bin/sh" , "-c","/kong/declarative/merge.sh && kong start" ]
+#    command: [ "/bin/sh" , "-c","/kong/declarative/merge.sh && kong start" ]
     environment:
       KONG_DATABASE: "off"
       KONG_DECLARATIVE_CONFIG: /kong/declarative/kong.yml
@@ -19,7 +19,7 @@ services:
       - "8000:8000"
       - "8001:8001"
     volumes:
-      - ./merge.sh:/kong/declarative/merge.sh
+#      - ./merge.sh:/kong/declarative/merge.sh
       - ./kong-config/:/kong/declarative/kong-config/
       - ./kong.yml:/kong/declarative/kong.yml
     networks:

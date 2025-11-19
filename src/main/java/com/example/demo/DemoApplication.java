@@ -57,7 +57,7 @@ public class DemoApplication {
     @PostConstruct
     public void generateToken() throws Exception {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("roles", List.of());
+        claims.put("roles", Arrays.asList("user"));
         claims.put("userId", 12345);
         String token = createToken(claims, "ndvan");
         System.out.println("=== GENERATED TOKEN ===");
