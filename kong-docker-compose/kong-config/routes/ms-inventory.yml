@@ -9,3 +9,40 @@
       - DELETE
       - UPDATE
     strip_path: true
+    plugins:
+      - name: pre-function
+        config:
+          access:
+            - |
+              local auth_header = kong.request.get_header("authorization")
+              local token = auth_header:match("Bearer%s+(.+)")
+
+              if token then
+                          -- Tìm vị trí dấu chấm (.) để cắt chuỗi
+                          local first_dot = token:find("%.")
+                          local last_dot = token:find("%.", first_dot + 1)
+              if first_dot and last_dot then
+              local payload_b64 = token:sub(first_dot + 1, last_dot - 1)
+              local remainder = #payload_b64 % 4
+               if remainder > 0 then
+                  payload_b64 = payload_b64 .. string.rep("=", 4 - remainder)
+               end
+               payload_b64 = payload_b64:gsub("-", "+"):gsub("_", "/")
+                -- 3. Decode Base64 và Parse JSON
+               local claims = ngx.decode_base64(payload_b64)
+                kong.log.info("Token: ", claims)
+                if claims then
+                   local payload = parse_json_safely(claims)
+                   if payload and payload.iss then
+                        kong.log.info("ISS: ", payload.iss)
+                        kong.ctx.shared.issuer = payload.iss
+                        return payload.iss
+                    end
+                end
+              end
+              end
+      - name: acl
+        config:
+          allow:
+            - admin
+          hide_groups_header: false

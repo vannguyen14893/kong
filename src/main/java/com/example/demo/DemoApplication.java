@@ -11,10 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @SpringBootApplication
 public class DemoApplication {
@@ -60,7 +57,7 @@ public class DemoApplication {
     @PostConstruct
     public void generateToken() throws Exception {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", "user");
+        claims.put("roles", List.of());
         claims.put("userId", 12345);
         String token = createToken(claims, "ndvan");
         System.out.println("=== GENERATED TOKEN ===");

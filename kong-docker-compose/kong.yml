@@ -29,7 +29,6 @@ services:
         url: https://petstore.swagger.io/v2/store/inventory
         tags:
           - shop
-
       - name: ms-user-service
         url: https://petstore.swagger.io/v2/store/inventory
         tags:
@@ -37,6 +36,9 @@ services:
 consumers:
       - username: jwt-mobile
         custom_id: jwt-mobile-001
+        acls:
+          - group: admin
+          - group: user
         tags:
           - jwt
           - mobile
@@ -110,6 +112,43 @@ routes:
           - DELETE
           - UPDATE
         strip_path: true
+        plugins:
+          - name: pre-function
+            config:
+              access:
+                - |
+                  local auth_header = kong.request.get_header("authorization")
+                  local token = auth_header:match("Bearer%s+(.+)")
+    
+                  if token then
+                              -- Tìm vị trí dấu chấm (.) để cắt chuỗi
+                              local first_dot = token:find("%.")
+                              local last_dot = token:find("%.", first_dot + 1)
+                  if first_dot and last_dot then
+                  local payload_b64 = token:sub(first_dot + 1, last_dot - 1)
+                  local remainder = #payload_b64 % 4
+                   if remainder > 0 then
+                      payload_b64 = payload_b64 .. string.rep("=", 4 - remainder)
+                   end
+                   payload_b64 = payload_b64:gsub("-", "+"):gsub("_", "/")
+                    -- 3. Decode Base64 và Parse JSON
+                   local claims = ngx.decode_base64(payload_b64)
+                    kong.log.info("Token: ", claims)
+                    if claims then
+                       local payload = parse_json_safely(claims)
+                       if payload and payload.iss then
+                            kong.log.info("ISS: ", payload.iss)
+                            kong.ctx.shared.issuer = payload.iss
+                            return payload.iss
+                        end
+                    end
+                  end
+                  end
+          - name: acl
+            config:
+              allow:
+                - admin
+              hide_groups_header: false
       - name: ms-leaderboard-route
         service: ms-leaderboard-service
         paths:
@@ -144,6 +183,7 @@ routes:
           - UPDATE
         strip_path: true
 plugins:
+
       - name: cors
         config:
           origins: ["http://localhost:3000", "https://example.com"]
@@ -171,6 +211,128 @@ plugins:
           cookie_names: []
           header_names:
             - authorization
+      - name: jwt
+        service: ms-user-service
+        config:
+          claims_to_verify:
+            - exp
+          key_claim_name: iss
+          secret_is_base64: false
+          run_on_preflight: false
+          maximum_expiration: 0
+          uri_param_names:
+            - jwt
+          cookie_names: [ ]
+          header_names:
+            - authorization
+      - name: jwt
+        service: ms-game-service
+        config:
+          claims_to_verify:
+            - exp
+          key_claim_name: iss
+          secret_is_base64: false
+          run_on_preflight: false
+          maximum_expiration: 0
+          uri_param_names:
+            - jwt
+          cookie_names: [ ]
+          header_names:
+            - authorization
+      - name: jwt
+        service: ms-inventory-service
+        config:
+          claims_to_verify:
+            - exp
+          key_claim_name: iss
+          secret_is_base64: false
+          run_on_preflight: false
+          maximum_expiration: 0
+          uri_param_names:
+            - jwt
+          cookie_names: [ ]
+          header_names:
+            - authorization
+      - name: jwt
+        service: ms-baccarat-service
+        config:
+          claims_to_verify:
+            - exp
+          key_claim_name: iss
+          secret_is_base64: false
+          run_on_preflight: false
+          maximum_expiration: 0
+          uri_param_names:
+            - jwt
+          cookie_names: [ ]
+          header_names:
+            - authorization
+      - name: jwt
+        service: ms-leaderboard-service
+        config:
+          claims_to_verify:
+            - exp
+          key_claim_name: iss
+          secret_is_base64: false
+          run_on_preflight: false
+          maximum_expiration: 0
+          uri_param_names:
+            - jwt
+          cookie_names: [ ]
+          header_names:
+            - authorization
+
+    #  - name: pre-function
+    #    route: ms-inventory-route
+    #    config:
+    #      access:
+    #        - |
+    #          -- Extract JWT token từ header
+    #          local token = kong.request.get_header("authorization")
+    #          if token then
+    #            token = token:match("Bearer%s+(.+)")
+    #          end
+    #
+    #          if token then
+    #            -- Forward token đến upstream service
+    #            kong.service.request.set_header("X-JWT-Token", token)
+    #
+    #            -- Basic claim extraction without external libraries
+    #            -- Chỉ extract các claims đơn giản từ payload
+    #            local parts = {}
+    #            for part in token:gmatch("[^%.]+") do
+    #              table.insert(parts, part)
+    #            end
+    #
+    #            if #parts >= 2 then
+    #              local payload = parts[2]
+    #              -- Base64 decode
+    #              local missing_padding = #payload % 4
+    #              if missing_padding > 0 then
+    #                payload = payload .. string.rep("=", 4 - missing_padding)
+    #              end
+    #
+    #              local ok, decoded = pcall(function()
+    #                return require("ngx.base64").decode_base64url(payload)
+    #              end)
+    #
+    #              if ok and decoded then
+    #                -- Parse JSON claims
+    #                local claims, err = kong.json.decode(decoded)
+    #                if claims then
+    #                  if claims.sub then
+    #                    kong.service.request.set_header("X-User-ID", claims.sub)
+    #                  end
+    #                  if claims.roles then
+    #                    kong.service.request.set_header("X-User-Roles", type(claims.roles) == "table" and table.concat(claims.roles, ",") or tostring(claims.roles))
+    #                  end
+    #                  if claims.email then
+    #                    kong.service.request.set_header("X-User-Email", claims.email)
+    #                  end
+    #                end
+    #              end
+    #            end
+    #          end
       - name: rate-limiting
         service: ms-user-service
         config:

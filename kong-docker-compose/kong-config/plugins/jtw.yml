@@ -12,3 +12,73 @@
       cookie_names: []
       header_names:
         - authorization
+  - name: jwt
+    service: ms-user-service
+    config:
+      claims_to_verify:
+        - exp
+      key_claim_name: iss
+      secret_is_base64: false
+      run_on_preflight: false
+      maximum_expiration: 0
+      uri_param_names:
+        - jwt
+      cookie_names: [ ]
+      header_names:
+        - authorization
+  - name: jwt
+    service: ms-game-service
+    config:
+      claims_to_verify:
+        - exp
+      key_claim_name: iss
+      secret_is_base64: false
+      run_on_preflight: false
+      maximum_expiration: 0
+      uri_param_names:
+        - jwt
+      cookie_names: [ ]
+      header_names:
+        - authorization
+  - name: jwt
+    service: ms-inventory-service
+    config:
+      claims_to_verify:
+        - exp
+      key_claim_name: iss
+      secret_is_base64: false
+      run_on_preflight: false
+      maximum_expiration: 0
+      uri_param_names:
+        - jwt
+      cookie_names: [ ]
+      header_names:
+        - authorization
+  - name: jwt
+    service: ms-baccarat-service
+    config:
+      claims_to_verify:
+        - exp
+      key_claim_name: iss
+      secret_is_base64: false
+      run_on_preflight: false
+      maximum_expiration: 0
+      uri_param_names:
+        - jwt
+      cookie_names: [ ]
+      header_names:
+        - authorization
+  - name: jwt
+    service: ms-leaderboard-service
+    config:
+      claims_to_verify:
+        - exp
+      key_claim_name: iss
+      secret_is_base64: false
+      run_on_preflight: false
+      maximum_expiration: 0
+      uri_param_names:
+        - jwt
+      cookie_names: [ ]
+      header_names:
+        - authorization

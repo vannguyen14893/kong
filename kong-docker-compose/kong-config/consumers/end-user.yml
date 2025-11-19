@@ -1,5 +1,8 @@
   - username: jwt-mobile
     custom_id: jwt-mobile-001
+    acls:
+      - group: admin
+      - group: user
     tags:
       - jwt
       - mobile
